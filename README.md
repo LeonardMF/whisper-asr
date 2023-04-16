@@ -61,11 +61,23 @@ Detected text: Wie ist das weder ein Passwort?
 Translated transcribt: How is the WLAN Password?
 ```
 
-### Run
+## Whisper API
+
+### Enviroment Variables
+
+[Whisper API](https://platform.openai.com/docs/api-reference/audio) needs API key from OpenAI as enviroment variables in `.env`:
+
+``` shell
+export OPENAI_API_KEY =
+```
+
+### Call API
 
 ``` shell
 source .env
 python whisper-api.py
+python whisper-api.py --audio_file_name english --methode transcript  
+python whisper-api.py --methode translate
 ```
 
 ## Server-Client
