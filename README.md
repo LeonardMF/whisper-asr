@@ -85,13 +85,18 @@ python whisper-api.py --methode translate
 ### run Server
 
 ``` shell
-flask --app server run
+flask --app server run --port 5001
 ```
 
 ### run Client
 
 ``` shell
-curl -F "file=@audio/deutsch.mp3" http://localhost:5000/whisper
+python client.py
+python client.py --audio_file_name english
+```
+
+``` shell
+curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
 ```
 
 ## Dockerize
@@ -103,4 +108,10 @@ docker run -p 5001:5000 whisper-asr
 
 ``` shell
 curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
+```
+
+## Audio
+
+``` shell
+ffmpeg -i input.m4a -vn -ar 44100 -ac 2 -b:a 192k output.mp3
 ```

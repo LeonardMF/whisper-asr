@@ -17,7 +17,6 @@ print("app: ", app)
 def hello():
     return "Hello Whisper!"
 
-
 @app.route('/whisper', methods=['POST'])
 def handler():
     print("request: ", request.files)
@@ -26,7 +25,7 @@ def handler():
         abort(400)
 
     # For each file, let's store the results in a list of dictionaries.
-    results = []
+    result = {}
 
     # Loop over every file that the user submitted.
     for filename, handle in request.files.items():
@@ -36,13 +35,30 @@ def handler():
         # Write the user's uploaded file to the temporary file.
         # The file will get deleted when it drops out of scope.
         handle.save(temp)
+        
+        # load audio and pad/trim it to fit 30 seconds
+        audio = whisper.load_audio(temp.name)
+        audio = whisper.pad_or_trim(audio)
+        
         # Let's get the transcript of the temporary file.
-        result = model.transcribe(temp.name)
+        transcribe_result = model.transcribe(audio)
+        
+        # make log-Mel spectrogram and move to the same device as the model
+        mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    
+        # detect the spoken language
+        _, probs = model.detect_language(mel)
+        detected_language = max(probs, key=probs.get)
+        
         # Now we can store the result object for this file.
-        results.append({
-            'filename': filename,
-            'transcript': result['text'],
-        })
+        result['audio_file_name'] = filename
+        result['detected_language'] = detected_language
+        result['transcription'] = transcribe_result['text']
+        
+        # Translate if the language is not English
+        if detected_language != "en":
+            translate_result = model.transcribe(audio, task = 'translate', fp16=False)
+            result['translation'] = translate_result['text']
 
     # This will be automatically converted to JSON.
-    return {'results': results}
+    return result
