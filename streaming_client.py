@@ -22,23 +22,27 @@ async def audio_stream():
         stream.start()
         print("Start streaming audio ...")
         
-        start_time = time.time()
+        start_of_speech_flag = False
         
         while True:
             # Read audio data from input stream
             audio_data, _ = stream.read(1024)
             
-            # ToDo: Detect end of speech
-            
-            # Send audio data to the WebSocket server
-            await websocket.send(audio_data.tobytes())
-            # Check if 5 seconds have elapsed
-            if time.time() - start_time >= 5:
+            # Detect start of speech
+            if np.mean(audio_data) > 1:
+                start_of_speech_flag = True 
+                start_time = time.time()
+    
+            # Detect end of speech
+            if start_of_speech_flag and time.time() - start_time >= 0.5:
                 stream.stop()
                 print("Stop streaming audio ...")
                 # send end of speech
                 await websocket.send("end of speech")
                 break
+            else: 
+                # Send audio data to the WebSocket server
+                await websocket.send(audio_data.tobytes())
          
         # Receive any response from the WebSocket server (if needed)
         response = await websocket.recv()
