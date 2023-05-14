@@ -29,7 +29,7 @@ async def audio_stream():
             audio_data, _ = stream.read(1024)
             
             # Detect start of speech
-            if np.mean(audio_data) > 1:
+            if np.mean(audio_data) > 10:
                 start_of_speech_flag = True 
                 start_time = time.time()
     
