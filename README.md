@@ -103,7 +103,13 @@ curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
 
 ``` shell
 docker build -t whisper-asr .
-docker run -p 5001:5000 whisper-asr
+docker build . -t leonardmf/whisper-asr:0.1.0 -t leonardmf/whisper-asr:latest
+docker run -p 5001:5000 leonardmf/whisper-asr:latest
+```
+
+``` shell
+docker push leonardmf/whisper-asr:0.1.0
+docker push leonardmf/whisper-asr:latest
 ```
 
 ``` shell
@@ -115,3 +121,24 @@ curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
 ``` shell
 ffmpeg -i input.m4a -vn -ar 44100 -ac 2 -b:a 192k output.mp3
 ```
+
+## Streaming Server-Client
+
+Real ASR with streaming and end-of-speech detection.
+
+In terminal 1:
+
+``` shell
+python streaming_server.py
+WebSocket server started. Listening on port 8765.
+```
+
+In terminal 2:
+
+``` shell
+python streaming_client.py
+WebSocket connection established.
+Start streaming audio ...
+```
+
+Start to speak ...

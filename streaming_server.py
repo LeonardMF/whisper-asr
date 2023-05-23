@@ -3,6 +3,7 @@ import asyncio
 import websockets
 import wave
 import whisper
+import time
 
 # Check if NVIDIA GPU is available
 # torch.cuda.is_available()
@@ -29,8 +30,10 @@ async def audio_server(websocket, path):
                 wave_file.writeframes(audio_data)
             else:
                 # Transcribe audio file
+                transcribe_start_time = time.time()
                 transcribe_result = model.transcribe("audio.wav")
-                await websocket.send(f"Transcript: {transcribe_result['text']}")
+                transcribe_duration = time.time() - transcribe_start_time
+                await websocket.send(f"Transcript: {transcribe_result['text']} (Duration: {transcribe_duration})")
                 break
     except websockets.exceptions.ConnectionClosed:
         print("WebSocket connection closed.")
