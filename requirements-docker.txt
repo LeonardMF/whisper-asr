@@ -1,2 +1,2 @@
-Flask==2.2.3
 torch==2.0.0
+websockets==11.0.3

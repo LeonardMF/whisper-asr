@@ -102,13 +102,17 @@ curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
 ## Dockerize
 
 ``` shell
-docker build -t whisper-asr .
 docker build . -t leonardmf/whisper-asr:0.1.0 -t leonardmf/whisper-asr:latest
 docker run -p 5001:5000 leonardmf/whisper-asr:latest
+docker run -p 8765:8765 leonardmf/whisper-asr:0.2.0
+
+# with GPU
+docker run --gpus=all -p 8765:8765 leonardmf/whisper-asr:0.2.0
+docker run --gpus=all -p 5001:5000 leonardmf/whisper-asr:latest
 ```
 
 ``` shell
-docker push leonardmf/whisper-asr:0.1.0
+docker push leonardmf/whisper-asr:0.2.0
 docker push leonardmf/whisper-asr:latest
 ```
 
@@ -131,6 +135,8 @@ In terminal 1:
 ``` shell
 python streaming_server.py
 WebSocket server started. Listening on port 8765.
+# Or docker
+docker run -p 8765:8765 leonardmf/whisper-asr:0.2.0
 ```
 
 In terminal 2:

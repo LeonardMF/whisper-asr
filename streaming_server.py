@@ -4,11 +4,14 @@ import websockets
 import wave
 import whisper
 import time
+import torch
 
 # Check if NVIDIA GPU is available
-# torch.cuda.is_available()
-# DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-DEVICE = "cpu"
+print("NVIDIA GPU is available: " + str(torch.cuda.is_available()))
+if torch.cuda.is_available():
+    DEVICE = "cuda" 
+else:
+    DEVICE = "cpu"
 # Load the Whisper model:
 model = whisper.load_model("base", device=DEVICE)
 
@@ -44,7 +47,7 @@ async def audio_server(websocket, path):
 
 async def main():
     # Start the WebSocket server
-    server = await websockets.serve(audio_server, "localhost", 8765)
+    server = await websockets.serve(audio_server, "0.0.0.0", 8765)
 
     print("WebSocket server started. Listening on port 8765.")
 

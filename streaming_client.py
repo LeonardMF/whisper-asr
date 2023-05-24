@@ -38,6 +38,7 @@ async def audio_stream():
                 stream.stop()
                 print("Stop streaming audio ...")
                 # send end of speech
+                eos_time = time.time()
                 await websocket.send("end of speech")
                 break
             else: 
@@ -46,9 +47,9 @@ async def audio_stream():
          
         # Receive any response from the WebSocket server (if needed)
         response = await websocket.recv()
-        
+        response_time = time.time()
         print(response)
-        
+        print("Response time: " + str(response_time - eos_time))
         await websocket.close()
           
 async def main():

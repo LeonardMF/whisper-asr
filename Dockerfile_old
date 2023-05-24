@@ -8,8 +8,8 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install "git+https://github.com/openai/whisper.git" 
 RUN apt-get install -y ffmpeg
 
-COPY streaming_server.py streaming_server.py
+COPY server.py server.py
 
-EXPOSE 8765
+EXPOSE 5000
 
-CMD [ "python3", "streaming_server.py"]
+CMD [ "python3", "-m" , "flask", "--app", "server", "run", "--host=0.0.0.0"]

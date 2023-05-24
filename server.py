@@ -6,7 +6,6 @@ import torch
 
 # Check if NVIDIA GPU is available
 print("NVIDIA GPU is available: " + str(torch.cuda.is_available()))
-# DEVICE = "cuda" 
 if torch.cuda.is_available():
     DEVICE = "cuda" 
 else:

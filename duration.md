@@ -35,3 +35,39 @@ detect_duration: 0.5100722312927246
 detected_language: en
 transcribe_duration: 1.6423041820526123
 transcription:  What is the password for the Wi-Fi?
+
+## Docker with CPU
+
+Request duration: 1.888685703277588
+audio_file_name: deutsch
+detect_duration: 0.2290353775024414
+detected_language: de
+transcribe_duration: 0.8254776000976562
+transcription:  Wie ist das weder ein Passwort?
+translate_duration: 0.5595252513885498
+translation:  How is the WLAN Password?
+
+Request duration: 1.0634901523590088
+audio_file_name: english
+detect_duration: 0.24167227745056152
+detected_language: en
+transcribe_duration: 0.5990700721740723
+transcription:  What is the password for the Wi-Fi?
+
+## Docker with GPU
+
+Request duration: 0.7674801349639893
+audio_file_name: deutsch
+detect_duration: 0.024218082427978516
+detected_language: de
+transcribe_duration: 0.36921048164367676
+transcription:  Wie ist das weder ein Passwort?
+translate_duration: 0.08588314056396484
+translation:  How is the WLAN Password?
+
+Request duration: 0.6767730712890625
+audio_file_name: english
+detect_duration: 0.0206906795501709
+detected_language: en
+transcribe_duration: 0.38965892791748047
+transcription:  What is the password for the Wi-Fi?
