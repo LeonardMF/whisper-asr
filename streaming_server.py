@@ -17,12 +17,28 @@ model = whisper.load_model("base", device=DEVICE)
 
 async def audio_server(websocket, path):
     print("WebSocket connection established.")
+    headers = websocket.request_headers
+    
+    if "samplerate" in headers:
+        samplerate = int(headers["samplerate"])
+    else:
+        samplerate = 44100 # Default 44.1 kHz
+        
+    if "channels" in headers:
+        channels = int(headers["channels"])
+    else:
+        channels = 1 # Mono
+        
+    if "task" in headers:
+        task = headers["task"]
+    else:
+        task = "transcribe"
 
     # Configure WAV file settings
     wave_file = wave.open("audio.wav", "wb")
-    wave_file.setnchannels(1)  # Mono
+    wave_file.setnchannels(channels)  
     wave_file.setsampwidth(2)  # 2 bytes per sample
-    wave_file.setframerate(44100)  # Sample rate of 44.1kHz
+    wave_file.setframerate(samplerate)
 
     try:
         while True:
@@ -31,6 +47,26 @@ async def audio_server(websocket, path):
             if isinstance(audio_data, bytes):
                 # Write audio data to the WAV file
                 wave_file.writeframes(audio_data)
+            elif task == "translate":
+                # Detect language
+                audio = whisper.load_audio("audio.wav")
+                audio = whisper.pad_or_trim(audio)
+                
+                # make log-Mel spectrogram and move to the same device as the model
+                detect_start_time = time.time()
+                mel = whisper.log_mel_spectrogram(audio).to(model.device)
+            
+                # detect the spoken language
+                _, probs = model.detect_language(mel)
+                detected_language = max(probs, key=probs.get)
+                detect_duration = time.time() - detect_start_time
+                
+                # Translate audio file
+                translate_start_time = time.time()
+                translate_result = model.transcribe(audio, task = 'translate', fp16=False)
+                translate_duration = time.time() - translate_start_time
+                await websocket.send(f"Translation: {translate_result['text']} (Duration: {translate_duration}) (Detected Language: {detected_language}) (Duration: {detect_duration})")
+                break
             else:
                 # Transcribe audio file
                 transcribe_start_time = time.time()

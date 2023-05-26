@@ -102,17 +102,17 @@ curl -F "file=@audio/deutsch.mp3" http://localhost:5001/whisper
 ## Dockerize
 
 ``` shell
-docker build . -t leonardmf/whisper-asr:0.1.0 -t leonardmf/whisper-asr:latest
+docker build . -t leonardmf/whisper-asr:0.2.1 -t leonardmf/whisper-asr:latest
 docker run -p 5001:5000 leonardmf/whisper-asr:latest
-docker run -p 8765:8765 leonardmf/whisper-asr:0.2.0
+docker run -p 8765:8765 leonardmf/whisper-asr:0.2.1
 
 # with GPU
-docker run --gpus=all -p 8765:8765 leonardmf/whisper-asr:0.2.0
+docker run --gpus=all -p 8765:8765 leonardmf/whisper-asr:0.2.1
 docker run --gpus=all -p 5001:5000 leonardmf/whisper-asr:latest
 ```
 
 ``` shell
-docker push leonardmf/whisper-asr:0.2.0
+docker push leonardmf/whisper-asr:0.2.1
 docker push leonardmf/whisper-asr:latest
 ```
 
@@ -128,7 +128,7 @@ ffmpeg -i input.m4a -vn -ar 44100 -ac 2 -b:a 192k output.mp3
 
 ## Streaming Server-Client
 
-Real ASR with streaming and end-of-speech detection.
+ASR with streaming and end-of-speech detection.
 
 In terminal 1:
 
@@ -136,13 +136,16 @@ In terminal 1:
 python streaming_server.py
 WebSocket server started. Listening on port 8765.
 # Or docker
-docker run -p 8765:8765 leonardmf/whisper-asr:0.2.0
+docker run -p 8765:8765 leonardmf/whisper-asr:0.2.1
+# with GPU
+docker run --gpus=all -p 8765:8765 leonardmf/whisper-asr:0.2.1
 ```
 
 In terminal 2:
 
 ``` shell
 python streaming_client.py
+python streaming_client.py --task translate
 WebSocket connection established.
 Start streaming audio ...
 ```
