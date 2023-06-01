@@ -1,19 +1,20 @@
 #!/usr/bin/env python
+
+# Diese Server-Version greift auf pywhispercpp als Python-Bibliothek von whisper.cpp zu
+# Dient dem Vergleich der CPP Version mit der Open-AI Version von Whisper
+# Die Python-Anbindung beinhaltet nur Transcribe, nicht Translate.
+
+import time
+import json
+import wave
 import asyncio
 import websockets
-import wave
-import whisper
-import time
-import torch
+from pywhispercpp.model import Model
 
-# Check if NVIDIA GPU is available
-print("NVIDIA GPU is available: " + str(torch.cuda.is_available()))
-if torch.cuda.is_available():
-    DEVICE = "cuda" 
-else:
-    DEVICE = "cpu"
+
 # Load the Whisper model:
-model = whisper.load_model("base", device=DEVICE)
+model = Model(model="base")
+
 
 async def audio_server(websocket, path):
     print("WebSocket connection established.")
@@ -50,42 +51,36 @@ async def audio_server(websocket, path):
                 print(f"Receive Data: {len(audio_data)}")
                 # Write audio data to the WAV file
                 wave_file.writeframes(audio_data)
-            elif task == "translate":
-                print("Translate...")
-                # Detect language
-                audio = whisper.load_audio("audio.wav")
-                audio = whisper.pad_or_trim(audio)
-                
-                # make log-Mel spectrogram and move to the same device as the model
-                detect_start_time = time.time()
-                mel = whisper.log_mel_spectrogram(audio).to(model.device)
-            
-                # detect the spoken language
-                _, probs = model.detect_language(mel)
-                detected_language = max(probs, key=probs.get)
-                detect_duration = time.time() - detect_start_time
-                
+            elif task == "transcribe":
+                print("Transcribe...")
+
                 # Translate audio file
                 translate_start_time = time.time()
-                translate_result = model.transcribe(audio, task = 'translate', fp16=False)
+                segmentList = model.transcribe("audio.wav")
                 translate_duration = time.time() - translate_start_time
-                print(f"Translation: result = {translate_result}")
-                await websocket.send(f"Translation: {translate_result['text']} (Duration: {translate_duration}) (Detected Language: {detected_language}) (Duration: {detect_duration})")
+                print(f"Translation: result = {segmentList}  duration = {translate_duration}")
+                text = ""
+                for segment in segmentList:
+                    text += segment.text
+
+                message = {
+                    "text": text
+                }
+
+                await websocket.send( json.dumps( message ))
                 break
             else:
-                print("Transcribe...")
-                # Transcribe audio file
-                transcribe_start_time = time.time()
-                transcribe_result = model.transcribe("audio.wav", verbose = True)
-                transcribe_duration = time.time() - transcribe_start_time
-                await websocket.send(f"Transcript: {transcribe_result['text']} (Duration: {transcribe_duration})")
+                print("Translate...")
+                print("ist nicht implementiert")
                 break
-    except websockets.exceptions.ConnectionClosed:
+    except websockets.ConnectionClosed:
         print("WebSocket connection closed.")
+
 
     finally:
         # Close the WAV file
         wave_file.close()
+
 
 async def main():
     # Start the WebSocket server
