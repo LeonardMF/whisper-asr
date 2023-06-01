@@ -15,8 +15,12 @@ als Python-Bibliothek eingebunden:
 
 Erzeugen eines Docker-Containers:
 
-    docker build . -f Dockerfile-cpp -t onsei/whisper-asr:0.3.0
-    docker run -p 8765:8765 --name whisper onsei/whisper-asr:0.3.0
+    $ docker build . -f Dockerfile-cpp -t onsei/whisper-asr:0.3.0
+
+    ($ docker login)
+    $ docker push onsei/whisper-asr:0.3.0
+    
+    $docker run -p 8765:8765 --name whisper onsei/whisper-asr:0.3.0
 
 mit GPU:
 
