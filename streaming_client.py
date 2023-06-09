@@ -5,8 +5,8 @@ import sounddevice as sd
 import numpy as np
 import asyncclick as click
 
-LOCAL_WEB_SOCKET_URL = "ws://127.0.0.1:8765"
-# LOCAL_WEB_SOCKET_URL = "ws://192.168.178.123:8765"
+# LOCAL_WEB_SOCKET_URL = "ws://127.0.0.1:8765"
+LOCAL_WEB_SOCKET_URL = "ws://192.168.178.123:8765"
 # DEFAULT_SAMPLE_RATE = "44100"
 DEFAULT_SAMPLE_RATE = "16000"
 DEFAULT_CHANNELS = "1"
