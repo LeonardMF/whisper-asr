@@ -20,14 +20,14 @@ Entwicklungszeit signifikant verkürzen.
     ($ docker login)
     $ docker push onsei/whisper-base:latest
 
-    $ docker build . -t onsei/whisper-python:0.3.1.0002
-    $ docker push onsei/whisper-python:0.3.1.0002
+    $ docker build . -t onsei/whisper-python:0.3.1.0005
+    $ docker push onsei/whisper-python:0.3.1.0005
 
     # starten ohne GPU-Anbindung
-    $ docker run -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0002
+    $ docker run -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0005
     
     # starten mit GPU-Anbindung
-    $ docker run --gpus=all -p 8765:8765 --name whisper-python onsei/whisper-phython:0.3.1.0002
+    $ docker run --gpus=all -p 8765:8765 --name whisper-python onsei/whisper-phython:0.3.1.0005
 
 
 ## Whisper-CPP
@@ -42,15 +42,15 @@ als Python-Bibliothek eingebunden:
 
 Erzeugen eines Docker-Containers:
 
-    $ docker build . -f Dockerfile-cpp -t onsei/whisper-cpp:0.3.0
+    $ docker build . -f Dockerfile-cpp -t onsei/whisper-cpp:0.3.0.0004
 
     ($ docker login)
     $ docker push onsei/whisper-cpp:0.3.0
     
-    $docker run -p 8765:8765 --name whisper onsei/whisper-cpp:0.3.0
+    $docker run -p 8765:8765 --name whisper onsei/whisper-cpp:0.3.0.0004
 
 mit GPU:
 
-    docker run --gpus=all -p 8765:8765 onsei/whisper-cpp:0.3.0
+    docker run --gpus=all -p 8765:8765 onsei/whisper-cpp:0.3.0.0004
 
 

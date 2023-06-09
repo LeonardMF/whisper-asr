@@ -1,7 +1,7 @@
 # Whisper ASR Server-Prototyp Release Notizen
 
 
-## 0.3.1.0002 Alpha (09.06.2023)
+## 0.3.1.0005 Alpha (09.06.2023)
 
 Features: 
 
@@ -9,7 +9,7 @@ Features:
 * Aufteilung der Docker Container in Whisper-Base und Whisper-Server, um unnötiges Laden zu vermeiden
 
 
-## 0.3.0.0001 Alpha (01.06.2023)
+## 0.3.0.0004 Alpha (01.06.2023)
 
 Features:
 
