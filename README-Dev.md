@@ -27,7 +27,7 @@ Entwicklungszeit signifikant verkürzen.
     $ docker run -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0005
     
     # starten mit GPU-Anbindung
-    $ docker run --gpus=all -p 8765:8765 --name whisper-python onsei/whisper-phython:0.3.1.0005
+    $ docker run --gpus=all -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0005
 
 
 ## Whisper-CPP
