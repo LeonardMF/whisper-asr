@@ -1,9 +1,9 @@
-FROM onsei/whisper-base
+FROM onsei/whisper-base:1.0
 
+COPY ./config /python-docker/config
+COPY WhisperConst.py /python-docker
+COPY WhisperVersion.py /python-docker
+COPY WhisperStreamServer.py /python-docker
 WORKDIR /python-docker
-
-COPY whisper_stream_server.py whisper_stream_server.py
-
 EXPOSE 8765
-
-CMD [ "python", "whisper_stream_server.py"]
+CMD [ "python", "WhisperStreamServer.py"]

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: whisper-asr
+  name: whisper-asr
+spec:
+  type: NodePort
+  ports:
+    - name: "8765"
+      port: 8765
+      targetPort: 8765
+  selector:
+    io.kompose.service: whisper-asr
+status:
+  loadBalancer: {}
