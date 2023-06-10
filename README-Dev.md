@@ -11,23 +11,22 @@ Die Whisper-Python Version ist die offizielle Version von Open-AI mit deren Pyth
 ### Docker
 
 Fuer diese Version von Whisper werden zwei Docker-Container erzeugt. Der Whisper-Base Container enthält alle
-Python-Installationen. Der Whisper-Server Container enthaelt den Whisper-Server Code. Damit lässt sich die
+Python-Installationen. Der Whisper-Asr Container enthaelt den Whisper-Asr Server Code. Damit lässt sich die
 Entwicklungszeit signifikant verkürzen.
-
 
     $ docker build . -f Dockerfile-base -t onsei/whisper-base:latest
 
     ($ docker login)
     $ docker push onsei/whisper-base:latest
 
-    $ docker build . -t onsei/whisper-python:0.3.1.0005
-    $ docker push onsei/whisper-python:0.3.1.0005
+    $ docker build . -t onsei/whisper-asr:0.3.1.0005
+    $ docker push onsei/whisper-asr:0.3.1.0005
 
     # starten ohne GPU-Anbindung
-    $ docker run -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0005
+    $ docker run -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.3.1.0005
     
     # starten mit GPU-Anbindung
-    $ docker run --gpus=all -p 8765:8765 --name whisper-python onsei/whisper-python:0.3.1.0005
+    $ docker run --gpus=all -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.3.1.0005
 
 
 ## Whisper-CPP
