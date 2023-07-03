@@ -1,6 +1,14 @@
 # Whisper ASR Server-Prototyp Release Notizen
 
 
+## 0.4.0.0006 Alpha (03.07.2023)
+
+Features:
+
+* Aufbau des Trainings von "Ahoi Stella" im Multilanguage Tiny-Modell von Whisper
+* Erstellen der Whisper-KWS Version zur Püfung von "Ahoi Stella" als Wakeword
+
+
 ## 0.3.1.0005 Alpha (10.06.2023)
 
 Features: 
