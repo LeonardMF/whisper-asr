@@ -45,7 +45,8 @@ else:
 
 # Load the Whisper model:
 
-model = whisper.load_model("base", device=DEVICE)
+# model = whisper.load_model("./wakeword/whisper-tiny-de/pytorch_model.bin", device=DEVICE)
+model = whisper.load_model("tiny", device=DEVICE)
 
 
 # Hauptfunktion zur Analyse eines Audio-Streams
