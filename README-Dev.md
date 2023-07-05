@@ -22,14 +22,14 @@ verkürzen, weil die Ladezeiten der Container kürzer werden.
     ($ docker login)
     $ docker push onsei/whisper-base:1.0
 
-    $ docker build . -t onsei/whisper-asr:0.3.1.0005
-    $ docker push onsei/whisper-asr:0.3.1.0005
+    $ docker build . -t onsei/whisper-asr:0.4.0.0006
+    $ docker push onsei/whisper-asr:0.4.0.0006
 
     # starten ohne GPU-Anbindung
-    $ docker run -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.3.1.0005
+    $ docker run -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.4.0.0006
     
     # starten mit GPU-Anbindung
-    $ docker run --gpus=all -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.3.1.0005
+    $ docker run --gpus=all -p 8765:8765 --name whisper-asr onsei/whisper-asr:0.4.0.0006
 
 
 ## Whisper-ASR (C++)

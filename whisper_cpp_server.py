@@ -13,7 +13,7 @@ from pywhispercpp.model import Model
 
 
 # Load the Whisper model:
-model = Model(model="base")
+model = Model(model="./assets/ggml-model.bin")
 
 
 async def audio_server(websocket, path):

@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: whisper-asr
-          image: onsei/whisper-asr:0.3.1.0005
+          image: onsei/whisper-asr:0.4.0.0006
           ports:
             - containerPort: 8765
           resources: {}

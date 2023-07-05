@@ -19,3 +19,22 @@ Das eigene Trainingsprogramm ist in:
 
     * WhisperWakewordTrain.py - Training der Audiodaten
     * WakewordDataset.py - Eigenes Audio-Datenset erstellen
+
+Tools sind:
+
+    * WhisperConvert.py - dient der Konvertierung des Whisper Huggingface Modells nach PyTorch Modell
+
+Tests sind:
+
+    * WhisperDemo-Huggingface.py - Test aller Audiotdateien mit Huggingface-Modell
+    * WhisperDemo-PyTorch.py - Test aller Audiodteien mit PyTorch-Modell
+
+## Vorgehensweise zum Training eines Wakewords
+
+Zuerst werden die Trainingsdaten für das Wakeword in WakewordDataset.py eingefügt.
+Danach wird das Modell auf einem Linux-Rechner mit NVidia-Karte trainiert.
+Anschließend wird das erzeugte Huggingface-Modell mit WhisperConvert in das PyTorch-Modell 
+konvertiert. Das PyTorch-Modell wird im Ordner assets gespeichert und mit in den Docker-Container
+übertragen.
+
+

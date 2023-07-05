@@ -1,10 +1,11 @@
 # Whisper ASR Server-Prototyp Release Notizen
 
 
-## 0.4.0.0006 Alpha (04.07.2023)
+## 0.4.0.0006 Alpha (05.07.2023)
 
 Features:
 
+* Lokales PyTorch Whisper-Modell erstellt
 * Ausbau auf 54 Audio-Dateien zum Training
 * Aufbau des Trainings von "Ahoi Stella" im Multilanguage Tiny-Modell von Whisper
 * Erstellen der Whisper-KWS Version zur Püfung von "Ahoi Stella" als Wakeword

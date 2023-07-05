@@ -2,15 +2,17 @@
 # WakewordTrain
 # Hier werden die Audio-Dateien fuer "Ahio Stella" in Whisper trainiert, um ein Finetuning zu erhalten, bei dem das Wakeword
 # besser erkannt wird. Ausgangsmodell ist tiny multilanguage.
-
+# in WakewordDataset.py werden die zu trainierenden Daten aufbereitet, um dem Training zur Verfuegung zu stehen
 
 
 # extern
 
+import os
 import logging
 import torch
 import whisper
 import evaluate
+from dotenv import load_dotenv
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 from datasets import load_dataset, DatasetDict, Audio
@@ -23,6 +25,13 @@ from WhisperConst import WHISPER_LOG_LEVEL, WHISPER_DEFAULT_PORT, WHISPER_TEMP_F
 from WhisperVersion import WHISPER_BUILD, WHISPER_VERSION, WHISPER_DATE
 # lokales Laden der Wakeword Audio-Dateien zum Training von Whisper
 from WakewordDataset import audioTrainDataset, audioTestDataset
+
+
+# Parameter laden
+
+load_dotenv()
+
+API_KEY = os.getenv( "HUGGINGFACE_API_KEY" )
 
 
 # Logger
@@ -50,7 +59,7 @@ else:
 
 model = whisper.load_model("tiny", device=DEVICE)
 
-huggingface_token = "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";
+huggingface_token = API_KEY
 
 
 # Einlesen des Datensatzes
@@ -183,7 +192,8 @@ training_args = Seq2SeqTrainingArguments(
     warmup_steps=500,
     max_steps=4000,
     gradient_checkpointing=True,
-    #fp16=True,
+    # TODO: nur fuer NVidia
+    fp16=True,
     evaluation_strategy="steps",
     per_device_eval_batch_size=8,
     predict_with_generate=True,
@@ -219,3 +229,9 @@ processor.save_pretrained(training_args.output_dir)
 
 print("Training startet...")
 trainer.train()
+
+print("Trainiertes Modell speichern...")
+trainer.save_model()
+
+# TODO: muss noch eingebaut werden
+# trainer.create_model_card(**kwargs)
