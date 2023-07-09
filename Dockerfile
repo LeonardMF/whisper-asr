@@ -1,15 +1,10 @@
-FROM python:3.10-slim
+FROM onsei/whisper-base:1.0
 
+COPY ./assets/whisper-model.pt /python-docker/assets/whisper-model.pt
+COPY ./config /python-docker/config
+COPY WhisperConst.py /python-docker
+COPY WhisperVersion.py /python-docker
+COPY WhisperStreamServer.py /python-docker
 WORKDIR /python-docker
-
-COPY requirements-docker.txt requirements.txt
-RUN apt-get update && apt-get install git -y
-RUN pip3 install -r requirements.txt
-RUN pip3 install "git+https://github.com/openai/whisper.git" 
-RUN apt-get install -y ffmpeg
-
-COPY streaming_server.py streaming_server.py
-
 EXPOSE 8765
-
-CMD [ "python3", "streaming_server.py"]
+CMD [ "python", "WhisperStreamServer.py"]

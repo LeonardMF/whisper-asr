@@ -1,5 +1,7 @@
 audio/*
 
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -112,7 +114,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+wakeword/audio/
+wakeword/whisper-tiny-de
+assets/
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -130,3 +134,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.wav

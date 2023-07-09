@@ -1,0 +1,14 @@
+FROM python:3.10
+
+WORKDIR /python-docker
+
+COPY requirements-docker-cpp.txt requirements.txt
+COPY whisper_cpp_server.py whisper_cpp_server.py
+
+RUN apt-get update
+RUN apt-get install -y ffmpeg
+RUN pip3 install -r requirements.txt
+
+EXPOSE 8765
+
+CMD [ "python3", "whisper_cpp_server.py"]
