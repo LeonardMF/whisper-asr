@@ -6,7 +6,7 @@ Test whister as ASR.
 
 Python >= 3.8
 
-### on MacOS using Homebrew (<https://brew.sh/>)
+### on MacOS using [Homebrew](https://brew.sh/)
 
 ``` shell
 brew install ffmpeg
@@ -146,6 +146,8 @@ In terminal 2:
 ``` shell
 python streaming_client.py
 python streaming_client.py --task translate
+python streaming_client.py --store-audio-flag True 
+python streaming_client.py --audio_file_name 'audio/audio3.wav'
 WebSocket connection established.
 Start streaming audio ...
 ```

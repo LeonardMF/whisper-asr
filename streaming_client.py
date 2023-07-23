@@ -1,4 +1,6 @@
 import asyncio
+import aiofiles
+import struct
 import websockets
 import time
 import sounddevice as sd
@@ -10,13 +12,17 @@ DEFAULT_SAMPLE_RATE = "44100"
 DEFAULT_CHANNELS = "1"
 DEFAULT_DTYPE = np.int16
 DEFAULT_TASK = "translate"
+DEFAULT_AUDIO_FILE_NAME = "audio/audio.wav"
+DEFAULT_CHUNK_SIZE = 1024
+DEFAULT_STORE_AUDIO_FLAG = False
 
 async def audio_stream(
-    samplerate = DEFAULT_SAMPLE_RATE,
-    channels   = DEFAULT_CHANNELS,
-    dtype      = DEFAULT_DTYPE,
-    task       = DEFAULT_TASK,
-    url        = LOCAL_WEB_SOCKET_URL,
+    samplerate       = DEFAULT_SAMPLE_RATE,
+    channels         = DEFAULT_CHANNELS,
+    dtype            = DEFAULT_DTYPE,
+    task             = DEFAULT_TASK,
+    url              = LOCAL_WEB_SOCKET_URL,
+    store_audio_flag = DEFAULT_STORE_AUDIO_FLAG,
 ):
     samplerate = int(samplerate)
     channels   = int(channels)
@@ -26,7 +32,8 @@ async def audio_stream(
         "samplerate": samplerate,
         "channels": channels,
         "dtype": dtype,
-        "task": task
+        "task": task,
+        "store_audio_flag": store_audio_flag,
     }
     
     # Open the WebSocket connection
@@ -74,7 +81,49 @@ async def audio_stream(
         print(response)
         print("Response time: " + str(response_time - eos_time))
         await websocket.close()
+
+async def audio_file_stream(
+    samplerate       = DEFAULT_SAMPLE_RATE,
+    channels         = DEFAULT_CHANNELS,
+    dtype            = DEFAULT_DTYPE,
+    task             = DEFAULT_TASK,
+    url              = LOCAL_WEB_SOCKET_URL,
+    store_audio_flag = DEFAULT_STORE_AUDIO_FLAG,
+    audio_file_name  = DEFAULT_AUDIO_FILE_NAME,
+):
+    samplerate = int(samplerate)
+    channels   = int(channels)
+    
+    # Set the WebSocket request headers
+    headers = {
+        "samplerate": samplerate,
+        "channels": channels,
+        "dtype": dtype,
+        "task": task,
+        "store_audio_flag": store_audio_flag,
+    }
+    
+    # Open the WebSocket connection
+    async with websockets.connect(url,extra_headers=headers) as websocket:
+        print("WebSocket connection established.") 
+    
+        chunk_size = DEFAULT_CHUNK_SIZE
         
+        print("Start streaming from audio file: " + audio_file_name)
+        async with aiofiles.open(audio_file_name, 'rb') as afp:
+            data = await afp.read(chunk_size)
+            while data:
+                # Assuming audio is in 16-bit little-endian format
+                audio_data = struct.pack(f"<{len(data)//2}h", *struct.unpack(f"{len(data)//2}h", data))
+                await websocket.send(audio_data)
+                data = await afp.read(chunk_size)
+            print("Send end of speech...")
+            await websocket.send("end of speech")
+        
+        response = await websocket.recv()
+        print(response)
+        await websocket.close()
+
 @click.command()
 @click.option(
     "--task",
@@ -99,10 +148,36 @@ async def audio_stream(
     default="1",
     type=str,
     help="Channels of the audio stream",
-)       
-async def main(task: str, url: str, samplerate: str, channels: str):
+)
+@click.option(
+    "--store-audio-flag",
+    default=False,
+    type=bool,
+    help="Store audio file on server",
+)
+@click.option(
+    "--audio_file_name",
+    default="",
+    type=str,
+    help="name of the audio file to be streamed",
+)
+async def main(task: str, url: str, samplerate: str, channels: str, store_audio_flag: bool, audio_file_name: str):
     # Run the audio_stream function in an event loop
-    await audio_stream(task=task, url=url, samplerate=samplerate, channels=channels)
+    if audio_file_name:
+        await audio_file_stream(
+            task=task,
+            url=url,
+            samplerate=samplerate,
+            channels=channels,
+            store_audio_flag=store_audio_flag,
+            audio_file_name=audio_file_name)
+    else:
+        await audio_stream(
+            task=task,
+            url=url,
+            samplerate=samplerate,
+            channels=channels,
+            store_audio_flag=store_audio_flag)
 
 if __name__ == "__main__":
     asyncio.run(main())

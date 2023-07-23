@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+import os
 import asyncio
 import websockets
 import wave
 import whisper
 import time
 import torch
+import datetime
+import randomname
 
 # Check if NVIDIA GPU is available
 print("NVIDIA GPU is available: " + str(torch.cuda.is_available()))
@@ -15,7 +18,7 @@ else:
 # Load the Whisper model:
 model = whisper.load_model("base", device=DEVICE)
 
-async def audio_server(websocket, path):
+async def audio_server(websocket):
     print("WebSocket connection established.")
     headers = websocket.request_headers
     
@@ -33,9 +36,17 @@ async def audio_server(websocket, path):
         task = headers["task"]
     else:
         task = "transcribe"
-
+    
+    if "store_audio_flag" in headers and headers["store_audio_flag"] == "True":
+        store_audio_flag = True
+    else:
+        store_audio_flag = False
+    
     # Configure WAV file settings
-    wave_file = wave.open("audio.wav", "wb")
+    current_date = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-")
+    wave_file_name = current_date + randomname.get_name() + ".wav"
+    file_path = "audio/"
+    wave_file = wave.open(file_path + wave_file_name, "wb")
     wave_file.setnchannels(channels)  
     wave_file.setsampwidth(2)  # 2 bytes per sample
     wave_file.setframerate(samplerate)
@@ -49,7 +60,7 @@ async def audio_server(websocket, path):
                 wave_file.writeframes(audio_data)
             elif task == "translate":
                 # Detect language
-                audio = whisper.load_audio("audio.wav")
+                audio = whisper.load_audio(file_path + wave_file_name)
                 audio = whisper.pad_or_trim(audio)
                 
                 # make log-Mel spectrogram and move to the same device as the model
@@ -70,7 +81,7 @@ async def audio_server(websocket, path):
             else:
                 # Transcribe audio file
                 transcribe_start_time = time.time()
-                transcribe_result = model.transcribe("audio.wav")
+                transcribe_result = model.transcribe(file_path + wave_file_name)
                 transcribe_duration = time.time() - transcribe_start_time
                 await websocket.send(f"Transcript: {transcribe_result['text']} (Duration: {transcribe_duration})")
                 break
@@ -80,6 +91,12 @@ async def audio_server(websocket, path):
     finally:
         # Close the WAV file
         wave_file.close()
+        # Delete the WAV file
+        if store_audio_flag == False:
+            os.remove(file_path + wave_file_name)
+            print("Audio file deleted: " + file_path + wave_file_name)
+        else:
+            print("Audio file saved: " + file_path + wave_file_name)
 
 async def main():
     # Start the WebSocket server
