@@ -113,9 +113,8 @@ async def audio_file_stream(
         async with aiofiles.open(audio_file_name, 'rb') as afp:
             data = await afp.read(chunk_size)
             while data:
-                # Assuming audio is in 16-bit little-endian format
-                audio_data = struct.pack(f"<{len(data)//2}h", *struct.unpack(f"{len(data)//2}h", data))
-                await websocket.send(audio_data)
+                await asyncio.sleep(0.01)
+                await websocket.send(data)
                 data = await afp.read(chunk_size)
             print("Send end of speech...")
             await websocket.send("end of speech")
