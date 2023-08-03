@@ -117,10 +117,13 @@ async def audio_file_stream(
                 await websocket.send(data)
                 data = await afp.read(chunk_size)
             print("Send end of speech...")
+            eos_time = time.time()
             await websocket.send("end of speech")
         
         response = await websocket.recv()
+        response_time = time.time()
         print(response)
+        print("Response time: " + str(response_time - eos_time))
         await websocket.close()
 
 @click.command()

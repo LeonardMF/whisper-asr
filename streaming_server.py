@@ -18,6 +18,25 @@ else:
 # Load the Whisper model:
 model = whisper.load_model("base", device=DEVICE)
 
+def detect_language(audio):
+    # make log-Mel spectrogram and move to the same device as the model
+    detect_start_time = time.time()
+    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+
+    # detect the spoken language
+    _, probs = model.detect_language(mel)
+    detected_language = max(probs, key=probs.get)
+    detect_duration = time.time() - detect_start_time
+    
+    return detected_language, detect_duration
+
+def translate(audio):
+    # Translate audio file
+    translate_start_time = time.time()
+    translate_result = model.transcribe(audio, task = 'translate', fp16=False)
+    translate_duration = time.time() - translate_start_time
+    return translate_result, translate_duration
+       
 async def audio_server(websocket):
     print("WebSocket connection established.")
     headers = websocket.request_headers
@@ -63,19 +82,19 @@ async def audio_server(websocket):
                 audio = whisper.load_audio(file_path + wave_file_name)
                 audio = whisper.pad_or_trim(audio)
                 
-                # make log-Mel spectrogram and move to the same device as the model
-                detect_start_time = time.time()
-                mel = whisper.log_mel_spectrogram(audio).to(model.device)
-            
-                # detect the spoken language
-                _, probs = model.detect_language(mel)
-                detected_language = max(probs, key=probs.get)
-                detect_duration = time.time() - detect_start_time
+                detected_language_task = asyncio.create_task(asyncio.to_thread(detect_language, audio))
+                translate_task = asyncio.create_task(asyncio.to_thread(translate, audio))
                 
-                # Translate audio file
-                translate_start_time = time.time()
-                translate_result = model.transcribe(audio, task = 'translate', fp16=False)
-                translate_duration = time.time() - translate_start_time
+                # Wait for both tasks to complete
+                await asyncio.gather(detected_language_task, translate_task)
+
+                # Get results from the tasks
+                detected_language, detect_duration = detected_language_task.result()
+                translate_result, translate_duration = translate_task.result()        
+                
+                # detected_language, detect_duration = await detect_language(audio)
+                # translate_result, translate_duration = await translate(audio)
+                
                 await websocket.send(f"Translation: {translate_result['text']} (Duration: {translate_duration}) (Detected Language: {detected_language}) (Duration: {detect_duration})")
                 break
             else:

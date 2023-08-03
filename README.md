@@ -4,7 +4,7 @@ Test whister as ASR.
 
 ## Prerequisites
 
-Python >= 3.8
+Python >= 3.10
 
 ### on MacOS using [Homebrew](https://brew.sh/)
 
