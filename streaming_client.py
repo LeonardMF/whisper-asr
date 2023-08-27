@@ -18,6 +18,10 @@ DEFAULT_AUDIO_FILE_NAME = "audio/audio.wav"
 DEFAULT_CHUNK_SIZE = 1024
 DEFAULT_STORE_AUDIO_FLAG = False
 
+# Init EOS detector
+# myEOS = MyEOS()
+vadAnalyzer = VadAnalyzer(int(DEFAULT_SAMPLE_RATE))
+
 async def audio_stream(
     samplerate       = DEFAULT_SAMPLE_RATE,
     channels         = DEFAULT_CHANNELS,
@@ -44,14 +48,10 @@ async def audio_stream(
     
         # Configure sounddevice input stream
         stream = sd.InputStream(
-            channels=1,
-            samplerate=48000,
+            channels=channels,
+            samplerate=samplerate,
             dtype=np.int16,
         )
-        
-        # Init EOS detector
-        myEOS = MyEOS()
-        # vadAnalyzer = VadAnalyzer(samplerate)
         
         # Start recording audio
         stream.start()
@@ -62,9 +62,9 @@ async def audio_stream(
             audio_data, _ = stream.read(1024)
             
             # Detect start of speech
-            end_of_speech_flag = myEOS.detect_end_of_speech(audio_data)
+            # end_of_speech_flag = myEOS.detect_end_of_speech(audio_data)
             audio = audio_data.tobytes()
-            # end_of_speech_flag = await vadAnalyzer.detect_end_of_speech(audio)
+            end_of_speech_flag = vadAnalyzer.detect_end_of_speech(audio)
     
             # Detect end of speech
             if end_of_speech_flag:
