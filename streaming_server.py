@@ -90,10 +90,10 @@ async def audio_server(websocket):
 
                 # Get results from the tasks
                 detected_language, detect_duration = detected_language_task.result()
-                translate_result, translate_duration = translate_task.result()        
+                translate_result, translate_duration = translate_task.result()
                 
-                # detected_language, detect_duration = await detect_language(audio)
-                # translate_result, translate_duration = await translate(audio)
+                # detected_language, detect_duration = detect_language(audio)
+                # translate_result, translate_duration = translate(audio)
                 
                 await websocket.send(f"Translation: {translate_result['text']} (Duration: {translate_duration}) (Detected Language: {detected_language}) (Duration: {detect_duration})")
                 break
