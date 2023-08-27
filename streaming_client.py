@@ -7,8 +7,10 @@ import sounddevice as sd
 import numpy as np
 import asyncclick as click
 
+from vad import MyEOS, VadAnalyzer
+
 LOCAL_WEB_SOCKET_URL = "ws://127.0.0.1:8765"
-DEFAULT_SAMPLE_RATE = "44100"
+DEFAULT_SAMPLE_RATE = "48000"
 DEFAULT_CHANNELS = "1"
 DEFAULT_DTYPE = np.int16
 DEFAULT_TASK = "translate"
@@ -42,29 +44,30 @@ async def audio_stream(
     
         # Configure sounddevice input stream
         stream = sd.InputStream(
-            channels=channels,
-            samplerate=samplerate,
-            dtype=dtype,
+            channels=1,
+            samplerate=48000,
+            dtype=np.int16,
         )
+        
+        # Init EOS detector
+        myEOS = MyEOS()
+        # vadAnalyzer = VadAnalyzer(samplerate)
         
         # Start recording audio
         stream.start()
         print("Start streaming audio ...")
-        
-        start_of_speech_flag = False
-        start_time = time.time()
         
         while True:
             # Read audio data from input stream
             audio_data, _ = stream.read(1024)
             
             # Detect start of speech
-            if np.mean(audio_data) > 10:
-                start_of_speech_flag = True 
-                start_time = time.time()
+            end_of_speech_flag = myEOS.detect_end_of_speech(audio_data)
+            audio = audio_data.tobytes()
+            # end_of_speech_flag = await vadAnalyzer.detect_end_of_speech(audio)
     
             # Detect end of speech
-            if start_of_speech_flag and time.time() - start_time >= 0.55:
+            if end_of_speech_flag:
                 stream.stop()
                 print("Stop streaming audio ...")
                 # send end of speech
@@ -73,7 +76,7 @@ async def audio_stream(
                 break
             else: 
                 # Send audio data to the WebSocket server
-                await websocket.send(audio_data.tobytes())
+                await websocket.send(audio)
          
         # Receive any response from the WebSocket server (if needed)
         response = await websocket.recv()
